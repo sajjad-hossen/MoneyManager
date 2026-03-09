@@ -1,0 +1,231 @@
+/* Glassmorphism & Modern UI Design for MoneyManager */
+:root {
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --secondary: #64748b;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --background: #f8fafc;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    --radius: 16px;
+}
+
+body {
+    background-color: var(--background);
+    background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                      radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                      radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #1e293b;
+}
+
+.main-content {
+    padding-bottom: 5rem;
+}
+
+/* Glass Components */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+}
+
+.glass-header {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    padding: 1.5rem 2rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--glass-border);
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.glass-header h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(45deg, #1e293b, #6366f1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Summary Grid */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.summary-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.summary-card .card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.summary-card.income .card-icon { background: linear-gradient(135deg, #10b981, #059669); }
+.summary-card.expense .card-icon { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.summary-card.savings .card-icon { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+
+.summary-card h3 {
+    font-size: 0.9rem;
+    color: var(--secondary);
+    margin: 0;
+}
+
+.summary-card .amount {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+/* Dashboard Layout */
+.dashboard-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 992px) {
+    .dashboard-main { grid-template-columns: 1fr; }
+}
+
+/* Custom Buttons */
+.btn-premium {
+    background: linear-gradient(45deg, #6366f1, #4f46e5);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-premium:hover {
+    box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
+    transform: scale(1.02);
+    color: white;
+}
+
+.btn-premium-danger {
+    background: linear-gradient(45deg, #ef4444, #dc2626);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+/* Activity Items */
+.activity-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.activity-item:last-child { border: none; }
+
+.activity-item .icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    background: rgba(0,0,0,0.05);
+}
+
+.activity-item .details { flex: 1; }
+.activity-item .details .title { display: block; font-weight: 600; }
+.activity-item .details .date { font-size: 0.8rem; color: var(--secondary); }
+.activity-item .amount { font-weight: 700; }
+
+/* Table Improvements */
+.premium-table {
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.premium-table thead th {
+    border: none;
+    color: var(--secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.premium-table tbody tr {
+    background: rgba(255, 255, 255, 0.5);
+    transition: all 0.2s ease;
+}
+
+.premium-table tbody td {
+    border: none;
+    padding: 1.2rem 1rem;
+    vertical-align: middle;
+}
+
+.premium-table tbody tr td:first-child { border-radius: 12px 0 0 12px; }
+.premium-table tbody tr td:last-child { border-radius: 0 12px 12px 0; }
+
+.category-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Progress bar */
+.premium-progress {
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.05);
+}
+
+/* Sidebar / Navbar Glass */
+.navbar-glass {
+    background: rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: blur(15px) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+}
+
+.nav-link.active {
+    color: var(--primary) !important;
+    font-weight: 700;
+}

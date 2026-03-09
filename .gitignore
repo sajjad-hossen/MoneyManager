@@ -1,0 +1,34 @@
+# Visual Studio v17
+[Bb]in/
+[Oo]bj/
+[Tt]est[Rr]esults/
+
+# .NET
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+.idea/
+
+# SQL Server
+*.mdf
+*.ldf
+*.ndf
+
+# SQLite
+*.db
+*.db-shm
+*.db-wal
+
+# Sensitive Info
+appsettings.json
+appsettings.Development.json
+
+# Logs
+*.txt
+*.log
+
+# User Specific
+.gemini/
+brain/

@@ -1,0 +1,93 @@
+@model MoneyManager.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="dashboard-container">
+    <div class="glass-header mb-4">
+        <h1>Welcome Back 💸</h1>
+        <p class="text-muted">Track your financial journey at a glance.</p>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+        <div class="glass-card summary-card income">
+            <div class="card-icon"><i class="bi bi-graph-up-arrow"></i></div>
+            <div class="card-info">
+                <h3>Total Income</h3>
+                <span class="amount">@Model.TotalIncome.ToString("C")</span>
+            </div>
+        </div>
+        
+        <div class="glass-card summary-card expense">
+            <div class="card-icon"><i class="bi bi-graph-down-arrow"></i></div>
+            <div class="card-info">
+                <h3>Total Expenses</h3>
+                <span class="amount">@Model.TotalExpenses.ToString("C")</span>
+            </div>
+        </div>
+
+        <div class="glass-card summary-card savings">
+            <div class="card-icon"><i class="bi bi-piggy-bank"></i></div>
+            <div class="card-info">
+                <h3>Net Savings</h3>
+                <span class="amount">@Model.NetSavings.ToString("C")</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-main mt-4">
+        <!-- Chart/Distribution placeholder -->
+        <div class="glass-card spending-breakdown">
+            <h3><i class="bi bi-pie-chart"></i> Spending by Category</h3>
+            <div class="categories-list mt-3">
+                @foreach (var cat in Model.CategoryBreakdown.OrderByDescending(x => x.Amount))
+                {
+                    <div class="category-item mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>@cat.CategoryName</span>
+                            <span class="fw-bold">@cat.Amount.ToString("C") (@cat.Percentage.ToString("F1")%)</span>
+                        </div>
+                        <div class="progress premium-progress">
+                            <div class="progress-bar" role="progressbar" style="width: @cat.Percentage%; background-color: @cat.Color"></div>
+                        </div>
+                    </div>
+                }
+                @if (!Model.CategoryBreakdown.Any())
+                {
+                    <p class="text-muted italic">No expenses recorded yet.</p>
+                }
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="glass-card recent-activity">
+            <h3><i class="bi bi-clock-history"></i> Recent Activity</h3>
+            <div class="activity-list mt-3">
+                @foreach (var exp in Model.RecentExpenses)
+                {
+                    <div class="activity-item expense">
+                        <div class="icon"><i class="bi @exp.Category?.Icon"></i></div>
+                        <div class="details">
+                            <span class="title">@exp.Description</span>
+                            <span class="date">@exp.Date.ToShortDateString()</span>
+                        </div>
+                        <div class="amount text-danger">-@exp.Amount.ToString("C")</div>
+                    </div>
+                }
+                @foreach (var inc in Model.RecentIncomes)
+                {
+                    <div class="activity-item income">
+                        <div class="icon"><i class="bi bi-cash-stack"></i></div>
+                        <div class="details">
+                            <span class="title">@inc.Source</span>
+                            <span class="date">@inc.Date.ToShortDateString()</span>
+                        </div>
+                        <div class="amount text-success">+@inc.Amount.ToString("C")</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

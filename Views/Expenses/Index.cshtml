@@ -1,0 +1,46 @@
+@model IEnumerable<MoneyManager.Models.Expense>
+
+@{
+    ViewData["Title"] = "Expense History";
+}
+
+<div class="glass-header">
+    <div class="header-content">
+        <h1><i class="bi bi-cart4"></i> Expense Tracking</h1>
+        <a asp-action="Create" class="btn btn-premium-danger"><i class="bi bi-plus-lg"></i> Add New Expense</a>
+    </div>
+</div>
+
+<div class="glass-card mt-4">
+    <div class="table-responsive">
+        <table class="table premium-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model) {
+                    <tr>
+                        <td>@item.Date.ToShortDateString()</td>
+                        <td>
+                            <span class="category-badge" style="background-color: @item.Category?.Color">
+                                <i class="bi @item.Category?.Icon"></i> @item.Category?.Name
+                            </span>
+                        </td>
+                        <td>@item.Description</td>
+                        <td class="text-danger fw-bold">@item.Amount.ToString("C")</td>
+                        <td class="actions-cell">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn-action edit"><i class="bi bi-pencil-square"></i></a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn-action delete"><i class="bi bi-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
