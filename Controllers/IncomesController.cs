@@ -13,20 +13,17 @@ namespace MoneyManager.Controllers
             _incomeManager = incomeManager;
         }
 
-        // GET: Incomes
         public async Task<IActionResult> Index()
         {
             var incomes = await _incomeManager.GetAllIncomesAsync();
             return View(incomes);
         }
 
-        // GET: Incomes/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Incomes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Amount,Source,Date,Note")] Income income)
@@ -39,7 +36,6 @@ namespace MoneyManager.Controllers
             return View(income);
         }
 
-        // GET: Incomes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -50,7 +46,6 @@ namespace MoneyManager.Controllers
             return View(income);
         }
 
-        // POST: Incomes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Amount,Source,Date,Note")] Income income)
@@ -73,7 +68,6 @@ namespace MoneyManager.Controllers
             return View(income);
         }
 
-        // GET: Incomes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -84,7 +78,6 @@ namespace MoneyManager.Controllers
             return View(income);
         }
 
-        // POST: Incomes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
