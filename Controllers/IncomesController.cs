@@ -1,23 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MoneyManager.Data;
+using MoneyManager.Managers;
 using MoneyManager.Models;
 
 namespace MoneyManager.Controllers
 {
     public class IncomesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IIncomeManager _incomeManager;
 
-        public IncomesController(ApplicationDbContext context)
+        public IncomesController(IIncomeManager incomeManager)
         {
-            _context = context;
+            _incomeManager = incomeManager;
         }
 
         // GET: Incomes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Incomes.ToListAsync());
+            var incomes = await _incomeManager.GetAllIncomesAsync();
+            return View(incomes);
         }
 
         // GET: Incomes/Create
@@ -33,8 +33,7 @@ namespace MoneyManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(income);
-                await _context.SaveChangesAsync();
+                await _incomeManager.CreateIncomeAsync(income);
                 return RedirectToAction(nameof(Index));
             }
             return View(income);
@@ -45,7 +44,7 @@ namespace MoneyManager.Controllers
         {
             if (id == null) return NotFound();
 
-            var income = await _context.Incomes.FindAsync(id);
+            var income = await _incomeManager.GetIncomeByIdAsync(id.Value);
             if (income == null) return NotFound();
             
             return View(income);
@@ -62,12 +61,11 @@ namespace MoneyManager.Controllers
             {
                 try
                 {
-                    _context.Update(income);
-                    await _context.SaveChangesAsync();
+                    await _incomeManager.UpdateIncomeAsync(income);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception)
                 {
-                    if (!IncomeExists(income.Id)) return NotFound();
+                    if (!_incomeManager.IncomeExists(income.Id)) return NotFound();
                     else throw;
                 }
                 return RedirectToAction(nameof(Index));
@@ -80,7 +78,7 @@ namespace MoneyManager.Controllers
         {
             if (id == null) return NotFound();
 
-            var income = await _context.Incomes.FirstOrDefaultAsync(m => m.Id == id);
+            var income = await _incomeManager.GetIncomeByIdAsync(id.Value);
             if (income == null) return NotFound();
 
             return View(income);
@@ -91,19 +89,8 @@ namespace MoneyManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var income = await _context.Incomes.FindAsync(id);
-            if (income != null)
-            {
-                _context.Incomes.Remove(income);
-            }
-
-            await _context.SaveChangesAsync();
+            await _incomeManager.DeleteIncomeAsync(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool IncomeExists(int id)
-        {
-            return _context.Incomes.Any(e => e.Id == id);
         }
     }
 }

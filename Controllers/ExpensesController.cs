@@ -1,31 +1,32 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using MoneyManager.Data;
+using MoneyManager.Managers;
 using MoneyManager.Models;
 
 namespace MoneyManager.Controllers
 {
     public class ExpensesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IExpenseManager _expenseManager;
+        private readonly ICategoryManager _categoryManager;
 
-        public ExpensesController(ApplicationDbContext context)
+        public ExpensesController(IExpenseManager expenseManager, ICategoryManager categoryManager)
         {
-            _context = context;
+            _expenseManager = expenseManager;
+            _categoryManager = categoryManager;
         }
 
         // GET: Expenses
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Expenses.Include(e => e.Category);
-            return View(await applicationDbContext.ToListAsync());
+            var expenses = await _expenseManager.GetAllExpensesWithCategoryAsync();
+            return View(expenses);
         }
 
         // GET: Expenses/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["CategoryId"] = new SelectList(await _categoryManager.GetAllCategoriesAsync(), "Id", "Name");
             return View();
         }
 
@@ -36,11 +37,10 @@ namespace MoneyManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(expense);
-                await _context.SaveChangesAsync();
+                await _expenseManager.CreateExpenseAsync(expense);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", expense.CategoryId);
+            ViewData["CategoryId"] = new SelectList(await _categoryManager.GetAllCategoriesAsync(), "Id", "Name", expense.CategoryId);
             return View(expense);
         }
 
@@ -49,10 +49,10 @@ namespace MoneyManager.Controllers
         {
             if (id == null) return NotFound();
 
-            var expense = await _context.Expenses.FindAsync(id);
+            var expense = await _expenseManager.GetExpenseByIdAsync(id.Value);
             if (expense == null) return NotFound();
             
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", expense.CategoryId);
+            ViewData["CategoryId"] = new SelectList(await _categoryManager.GetAllCategoriesAsync(), "Id", "Name", expense.CategoryId);
             return View(expense);
         }
 
@@ -67,17 +67,16 @@ namespace MoneyManager.Controllers
             {
                 try
                 {
-                    _context.Update(expense);
-                    await _context.SaveChangesAsync();
+                    await _expenseManager.UpdateExpenseAsync(expense);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception)
                 {
-                    if (!ExpenseExists(expense.Id)) return NotFound();
+                    if (!_expenseManager.ExpenseExists(expense.Id)) return NotFound();
                     else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", expense.CategoryId);
+            ViewData["CategoryId"] = new SelectList(await _categoryManager.GetAllCategoriesAsync(), "Id", "Name", expense.CategoryId);
             return View(expense);
         }
 
@@ -86,9 +85,7 @@ namespace MoneyManager.Controllers
         {
             if (id == null) return NotFound();
 
-            var expense = await _context.Expenses
-                .Include(e => e.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var expense = await _expenseManager.GetExpenseByIdWithCategoryAsync(id.Value);
             if (expense == null) return NotFound();
 
             return View(expense);
@@ -99,19 +96,8 @@ namespace MoneyManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var expense = await _context.Expenses.FindAsync(id);
-            if (expense != null)
-            {
-                _context.Expenses.Remove(expense);
-            }
-
-            await _context.SaveChangesAsync();
+            await _expenseManager.DeleteExpenseAsync(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ExpenseExists(int id)
-        {
-            return _context.Expenses.Any(e => e.Id == id);
         }
     }
 }
