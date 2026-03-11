@@ -17,10 +17,10 @@ namespace MoneyManager.Managers
             _expenseRepository = expenseRepository;
         }
 
-        public async Task<DashboardViewModel> GetDashboardDataAsync()
+        public async Task<DashboardViewModel> GetDashboardDataAsync(string userId)
         {
-            var incomes = (await _incomeRepository.GetAllAsync()).ToList();
-            var expenses = (await _expenseRepository.GetAllWithCategoryAsync()).ToList();
+            var incomes = (await _incomeRepository.FindAsync(i => i.UserId == userId)).ToList();
+            var expenses = (await _expenseRepository.GetAllWithCategoryAsync(userId)).ToList();
 
             return new DashboardViewModel
             {

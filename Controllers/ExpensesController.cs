@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using MoneyManager.Managers;
 using MoneyManager.Models;
 
 namespace MoneyManager.Controllers
 {
+    [Authorize]
     public class ExpensesController : Controller
     {
         private readonly IExpenseManager _expenseManager;
@@ -19,14 +22,16 @@ namespace MoneyManager.Controllers
         // GET: Expenses
         public async Task<IActionResult> Index()
         {
-            var expenses = await _expenseManager.GetAllExpensesWithCategoryAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var expenses = await _expenseManager.GetAllExpensesWithCategoryAsync(userId);
             return View(expenses);
         }
 
         // GET: Expenses/Create
         public async Task<IActionResult> Create()
         {
-            ViewData["CategoryId"] = new SelectList(await _categoryManager.GetAllCategoriesAsync(), "Id", "Name");
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            ViewData["CategoryId"] = new SelectList(await _categoryManager.GetAllCategoriesAsync(userId), "Id", "Name");
             return View();
         }
 
@@ -35,12 +40,13 @@ namespace MoneyManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Amount,Description,Date,CategoryId,Note")] Expense expense)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
             if (ModelState.IsValid)
             {
-                await _expenseManager.CreateExpenseAsync(expense);
+                await _expenseManager.CreateExpenseAsync(expense, userId);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(await _categoryManager.GetAllCategoriesAsync(), "Id", "Name", expense.CategoryId);
+            ViewData["CategoryId"] = new SelectList(await _categoryManager.GetAllCategoriesAsync(userId), "Id", "Name", expense.CategoryId);
             return View(expense);
         }
 
@@ -49,10 +55,11 @@ namespace MoneyManager.Controllers
         {
             if (id == null) return NotFound();
 
-            var expense = await _expenseManager.GetExpenseByIdAsync(id.Value);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var expense = await _expenseManager.GetExpenseByIdAsync(id.Value, userId);
             if (expense == null) return NotFound();
             
-            ViewData["CategoryId"] = new SelectList(await _categoryManager.GetAllCategoriesAsync(), "Id", "Name", expense.CategoryId);
+            ViewData["CategoryId"] = new SelectList(await _categoryManager.GetAllCategoriesAsync(userId), "Id", "Name", expense.CategoryId);
             return View(expense);
         }
 
@@ -63,20 +70,22 @@ namespace MoneyManager.Controllers
         {
             if (id != expense.Id) return NotFound();
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _expenseManager.UpdateExpenseAsync(expense);
+                    await _expenseManager.UpdateExpenseAsync(expense, userId);
                 }
                 catch (Exception)
                 {
-                    if (!_expenseManager.ExpenseExists(expense.Id)) return NotFound();
+                    if (!_expenseManager.ExpenseExists(expense.Id, userId)) return NotFound();
                     else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(await _categoryManager.GetAllCategoriesAsync(), "Id", "Name", expense.CategoryId);
+            ViewData["CategoryId"] = new SelectList(await _categoryManager.GetAllCategoriesAsync(userId), "Id", "Name", expense.CategoryId);
             return View(expense);
         }
 
@@ -85,7 +94,8 @@ namespace MoneyManager.Controllers
         {
             if (id == null) return NotFound();
 
-            var expense = await _expenseManager.GetExpenseByIdWithCategoryAsync(id.Value);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var expense = await _expenseManager.GetExpenseByIdWithCategoryAsync(id.Value, userId);
             if (expense == null) return NotFound();
 
             return View(expense);
@@ -96,7 +106,8 @@ namespace MoneyManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _expenseManager.DeleteExpenseAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            await _expenseManager.DeleteExpenseAsync(id, userId);
             return RedirectToAction(nameof(Index));
         }
     }

@@ -6,11 +6,11 @@ namespace MoneyManager.Managers
 {
     public interface IIncomeManager
     {
-        Task<IEnumerable<Income>> GetAllIncomesAsync();
-        Task<Income?> GetIncomeByIdAsync(int id);
-        Task<Income> CreateIncomeAsync(Income income);
-        Task UpdateIncomeAsync(Income income);
-        Task DeleteIncomeAsync(int id);
-        bool IncomeExists(int id);
+        Task<IEnumerable<Income>> GetAllIncomesAsync(string userId);
+        Task<Income?> GetIncomeByIdAsync(int id, string userId);
+        Task<Income> CreateIncomeAsync(Income income, string userId);
+        Task UpdateIncomeAsync(Income income, string userId);
+        Task DeleteIncomeAsync(int id, string userId);
+        bool IncomeExists(int id, string userId);
     }
 }

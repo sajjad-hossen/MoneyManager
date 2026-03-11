@@ -1,10 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using MoneyManager.Managers;
 using MoneyManager.Models;
 
 namespace MoneyManager.Controllers
 {
+    [Authorize]
     public class IncomesController : Controller
+
     {
         private readonly IIncomeManager _incomeManager;
 
@@ -15,7 +19,8 @@ namespace MoneyManager.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var incomes = await _incomeManager.GetAllIncomesAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var incomes = await _incomeManager.GetAllIncomesAsync(userId);
             return View(incomes);
         }
 
@@ -30,7 +35,8 @@ namespace MoneyManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _incomeManager.CreateIncomeAsync(income);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+                await _incomeManager.CreateIncomeAsync(income, userId);
                 return RedirectToAction(nameof(Index));
             }
             return View(income);
@@ -40,7 +46,8 @@ namespace MoneyManager.Controllers
         {
             if (id == null) return NotFound();
 
-            var income = await _incomeManager.GetIncomeByIdAsync(id.Value);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var income = await _incomeManager.GetIncomeByIdAsync(id.Value, userId);
             if (income == null) return NotFound();
             
             return View(income);
@@ -54,13 +61,14 @@ namespace MoneyManager.Controllers
 
             if (ModelState.IsValid)
             {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
                 try
                 {
-                    await _incomeManager.UpdateIncomeAsync(income);
+                    await _incomeManager.UpdateIncomeAsync(income, userId);
                 }
                 catch (Exception)
                 {
-                    if (!_incomeManager.IncomeExists(income.Id)) return NotFound();
+                    if (!_incomeManager.IncomeExists(income.Id, userId)) return NotFound();
                     else throw;
                 }
                 return RedirectToAction(nameof(Index));
@@ -72,7 +80,8 @@ namespace MoneyManager.Controllers
         {
             if (id == null) return NotFound();
 
-            var income = await _incomeManager.GetIncomeByIdAsync(id.Value);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var income = await _incomeManager.GetIncomeByIdAsync(id.Value, userId);
             if (income == null) return NotFound();
 
             return View(income);
@@ -82,7 +91,8 @@ namespace MoneyManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _incomeManager.DeleteIncomeAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            await _incomeManager.DeleteIncomeAsync(id, userId);
             return RedirectToAction(nameof(Index));
         }
     }

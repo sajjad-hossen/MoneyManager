@@ -5,6 +5,6 @@ namespace MoneyManager.Managers
 {
     public interface IDashboardManager
     {
-        Task<DashboardViewModel> GetDashboardDataAsync();
+        Task<DashboardViewModel> GetDashboardDataAsync(string userId);
     }
 }
