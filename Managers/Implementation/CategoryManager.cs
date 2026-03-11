@@ -14,14 +14,15 @@ namespace MoneyManager.Managers
             _categoryRepository = categoryRepository;
         }
 
-        public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
+        public async Task<IEnumerable<Category>> GetAllCategoriesAsync(string userId)
         {
-            return await _categoryRepository.GetAllAsync();
+            return await _categoryRepository.FindAsync(c => c.UserId == userId || c.UserId == null);
         }
 
-        public async Task<Category?> GetCategoryByIdAsync(int id)
+        public async Task<Category?> GetCategoryByIdAsync(int id, string userId)
         {
-            return await _categoryRepository.GetByIdAsync(id);
+            var category = await _categoryRepository.GetByIdAsync(id);
+            return (category?.UserId == userId || category?.UserId == null) ? category : null;
         }
     }
 }

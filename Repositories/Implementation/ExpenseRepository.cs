@@ -10,9 +10,9 @@ namespace MoneyManager.Repositories
         {
         }
 
-        public async Task<IEnumerable<Expense>> GetAllWithCategoryAsync()
+        public async Task<IEnumerable<Expense>> GetAllWithCategoryAsync(string userId)
         {
-            return await _dbSet.Include(e => e.Category).ToListAsync();
+            return await _dbSet.Include(e => e.Category).Where(e => e.UserId == userId).ToListAsync();
         }
 
         public async Task<Expense?> GetByIdWithCategoryAsync(int id)

@@ -26,5 +26,8 @@ namespace MoneyManager.Models
         public virtual Category? Category { get; set; }
         
         public string? Note { get; set; }
+
+        public string? UserId { get; set; }
+        public virtual ApplicationUser? User { get; set; }
     }
 }

@@ -21,5 +21,8 @@ namespace MoneyManager.Models
         public DateTime Date { get; set; } = DateTime.Now;
         
         public string? Note { get; set; }
+
+        public string? UserId { get; set; }
+        public virtual ApplicationUser? User { get; set; }
     }
 }

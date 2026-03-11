@@ -6,7 +6,7 @@ namespace MoneyManager.Managers
 {
     public interface ICategoryManager
     {
-        Task<IEnumerable<Category>> GetAllCategoriesAsync();
-        Task<Category?> GetCategoryByIdAsync(int id);
+        Task<IEnumerable<Category>> GetAllCategoriesAsync(string userId);
+        Task<Category?> GetCategoryByIdAsync(int id, string userId);
     }
 }

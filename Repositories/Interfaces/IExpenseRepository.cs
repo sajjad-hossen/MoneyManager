@@ -7,7 +7,7 @@ namespace MoneyManager.Repositories
 {
     public interface IExpenseRepository : IRepository<Expense>
     {
-        Task<IEnumerable<Expense>> GetAllWithCategoryAsync();
+        Task<IEnumerable<Expense>> GetAllWithCategoryAsync(string userId);
         Task<Expense?> GetByIdWithCategoryAsync(int id);
     }
 }

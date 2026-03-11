@@ -14,43 +14,47 @@ namespace MoneyManager.Managers
             _expenseRepository = expenseRepository;
         }
 
-        public async Task<IEnumerable<Expense>> GetAllExpensesWithCategoryAsync()
+        public async Task<IEnumerable<Expense>> GetAllExpensesWithCategoryAsync(string userId)
         {
-            return await _expenseRepository.GetAllWithCategoryAsync();
+            return await _expenseRepository.GetAllWithCategoryAsync(userId);
         }
 
-        public async Task<Expense?> GetExpenseByIdWithCategoryAsync(int id)
+        public async Task<Expense?> GetExpenseByIdWithCategoryAsync(int id, string userId)
         {
-            return await _expenseRepository.GetByIdWithCategoryAsync(id);
+            var expense = await _expenseRepository.GetByIdWithCategoryAsync(id);
+            return expense?.UserId == userId ? expense : null;
         }
 
-        public async Task<Expense?> GetExpenseByIdAsync(int id)
+        public async Task<Expense?> GetExpenseByIdAsync(int id, string userId)
         {
-            return await _expenseRepository.GetByIdAsync(id);
+            var expense = await _expenseRepository.GetByIdAsync(id);
+            return expense?.UserId == userId ? expense : null;
         }
 
-        public async Task<Expense> CreateExpenseAsync(Expense expense)
+        public async Task<Expense> CreateExpenseAsync(Expense expense, string userId)
         {
+            expense.UserId = userId;
             return await _expenseRepository.AddAsync(expense);
         }
 
-        public async Task UpdateExpenseAsync(Expense expense)
+        public async Task UpdateExpenseAsync(Expense expense, string userId)
         {
+            expense.UserId = userId;
             await _expenseRepository.UpdateAsync(expense);
         }
 
-        public async Task DeleteExpenseAsync(int id)
+        public async Task DeleteExpenseAsync(int id, string userId)
         {
-            var expense = await _expenseRepository.GetByIdAsync(id);
+            var expense = await GetExpenseByIdAsync(id, userId);
             if (expense != null)
             {
                 await _expenseRepository.DeleteAsync(expense);
             }
         }
 
-        public bool ExpenseExists(int id)
+        public bool ExpenseExists(int id, string userId)
         {
-            return _expenseRepository.ExistsAsync(e => e.Id == id).GetAwaiter().GetResult();
+            return _expenseRepository.ExistsAsync(e => e.Id == id && e.UserId == userId).GetAwaiter().GetResult();
         }
     }
 }
