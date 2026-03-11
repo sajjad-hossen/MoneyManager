@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: moneymanager-web
+    env: docker
+    plan: free
+    region: ohio
+    branch: master
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: moneymanager-db
+          property: connectionString
+
+databases:
+  - name: moneymanager-db
+    databaseName: moneymanager
+    user: dbadmin
+    plan: free
+    region: ohio
